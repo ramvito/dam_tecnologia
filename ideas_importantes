@@ -1,0 +1,29 @@
+* Hablar del formato NFC Forum (NDEF) --> otros chips implementan otras funcionalidades (e.g. autenticación por passwords), pero el estandar no lo especifíca y por tanto la API de Android no recoge estas funcionalidades. Por ejemplo, mis NFC tags NTAG213 si implementan autenticación.
+
+* makeReadOnly() --> ndef.canMakeReadOnly() [ndef = Ndef.get(mytag)]
+* get specs --> 
+
+		for (int i = 0; i<mytag.getTechList().length; i++) {
+			Log.i("TECH:", mytag.getTechList()[0]); 
+        }
+
+		I/TECH:: android.nfc.tech.MifareUltralight
+		I/TECH:: android.nfc.tech.NfcA
+		I/TECH:: android.nfc.tech.Ndef
+
+* getId() --> 
+
+		Log.i("NFC Tag Id: ", byteArrayToHexString(mytag.getId())); // 04c2073a255584
+
+		public static String byteArrayToHexString(byte[] array) {
+		        StringBuffer hexString = new StringBuffer();
+		        for (byte b : array) {
+		            int intVal = b & 0xff;
+		            if (intVal < 0x10)
+		                hexString.append("0");
+		            hexString.append(Integer.toHexString(intVal));
+		        }
+		        return hexString.toString();
+		    }
+
+* datasheet NTAG 213: https://www.nxp.com/docs/en/data-sheet/NTAG213_215_216.pdf

@@ -17,6 +17,7 @@ import android.nfc.Tag;
 import android.nfc.tech.Ndef;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -135,6 +136,13 @@ public class MainActivity extends Activity{
                             String text =  readText(ndefRecord);
                             Toast.makeText(this, this.getString(R.string.ok_detection) + text, Toast.LENGTH_LONG ).show();
 
+                            for (int i = 0; i<mytag.getTechList().length; i++) {
+                                Log.i("TECH:", mytag.getTechList()[i]);
+                            }
+
+                            Log.i("NFC Tag Id: ", byteArrayToHexString(mytag.getId()));
+
+
                         } catch (UnsupportedEncodingException e) {
                             Toast.makeText(this, "NDEF not supported!", Toast.LENGTH_SHORT);
                         }
@@ -142,6 +150,17 @@ public class MainActivity extends Activity{
                 }
             }
         }
+    }
+
+    public static String byteArrayToHexString(byte[] array) {
+        StringBuffer hexString = new StringBuffer();
+        for (byte b : array) {
+            int intVal = b & 0xff;
+            if (intVal < 0x10)
+                hexString.append("0");
+            hexString.append(Integer.toHexString(intVal));
+        }
+        return hexString.toString();
     }
 
     private String readText(NdefRecord record) throws UnsupportedEncodingException {

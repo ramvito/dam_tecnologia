@@ -27,3 +27,12 @@
 		    }
 
 * datasheet NTAG 213: https://www.nxp.com/docs/en/data-sheet/NTAG213_215_216.pdf
+* NDEF spec: http://www.eet-china.com/ARTICLES/2006AUG/PDF/NFCForum-TS-NDEF.pdf?SOURCES=DOWNLOAD
+	* https://flomio.com/2012/05/ndef-basics/
+	* presentacion muy buena: https://es.slideshare.net/GabrielSerna/tutorial-near-field-communication-nfc
+
+
+-------------------------------------------------------- NOTAS ----------------------------------------------------------------------
+App1:
+
+	- mencionar que NFC tag READONLY solo muestra si la etiqueta lo permite, no quiere decir que esté o no en modo readonly ya.

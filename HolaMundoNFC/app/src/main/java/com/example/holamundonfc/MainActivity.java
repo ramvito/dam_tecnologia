@@ -20,6 +20,7 @@ import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,6 +34,10 @@ public class MainActivity extends Activity{
     boolean writeMode;
     Tag mytag;
     Context ctx;
+    CheckBox readOnlyCheckBox;
+    TextView tagIdText;
+    TextView readOnlyText;
+    TextView tagSpecsText;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,22 +48,27 @@ public class MainActivity extends Activity{
         Button btnWrite = (Button) findViewById(R.id.button);
         final TextView message = (TextView)findViewById(R.id.edit_message);
 
+        readOnlyCheckBox = findViewById(R.id.readOnlyCheckBox);
+        tagIdText = findViewById(R.id.tagIdText);
+        readOnlyText = findViewById(R.id.readOnlyText);
+        tagSpecsText = findViewById(R.id.tagSpecsText);
+
         btnWrite.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v) {
+
                 try {
                     if(mytag==null){
                         Toast.makeText(ctx, ctx.getString(R.string.error_detected), Toast.LENGTH_LONG ).show();
                     }else{
                         write(message.getText().toString(),mytag);
-                        Toast.makeText(ctx, ctx.getString(R.string.ok_writing), Toast.LENGTH_LONG ).show();
                     }
                 } catch (IOException e) {
                     Toast.makeText(ctx, ctx.getString(R.string.error_writing), Toast.LENGTH_LONG ).show();
                     e.printStackTrace();
                 } catch (FormatException e) {
-                    Toast.makeText(ctx, ctx.getString(R.string.error_writing) , Toast.LENGTH_LONG ).show();
+                    Toast.makeText(ctx, ctx.getString(R.string.error_writing), Toast.LENGTH_LONG ).show();
                     e.printStackTrace();
                 }
             }
@@ -78,13 +88,23 @@ public class MainActivity extends Activity{
 
         NdefRecord[] records = { createRecord(text) };
         NdefMessage  message = new NdefMessage(records);
-        // Get an instance of Ndef for the tag.
+
+        // Obtener una instancia de Ndef para el tag.
         Ndef ndef = Ndef.get(tag);
-        // Enable I/O
+        // Abrir la conexión
         ndef.connect();
-        // Write the message
+
+        // Escribir el mensaje
         ndef.writeNdefMessage(message);
-        // Close the connection
+        Toast.makeText(ctx, ctx.getString(R.string.ok_writing), Toast.LENGTH_LONG ).show();
+
+        // Poner en modo solo lectura
+        if (readOnlyCheckBox.isChecked() && ndef.canMakeReadOnly()) {
+
+                ndef.makeReadOnly();
+        }
+
+        // Cerrar la conexión
         ndef.close();
     }
 
@@ -105,6 +125,7 @@ public class MainActivity extends Activity{
         System.arraycopy(langBytes, 0, payload, 1,              langLength);
         System.arraycopy(textBytes, 0, payload, 1 + langLength, textLength);
 
+        // https://flomio.com/2012/05/ndef-basics/
         NdefRecord recordNFC = new NdefRecord(NdefRecord.TNF_WELL_KNOWN,  NdefRecord.RTD_TEXT,  new byte[0], payload);
 
         return recordNFC;
@@ -121,7 +142,7 @@ public class MainActivity extends Activity{
 
             if (ndef == null) {
 
-                // NDEF is not supported by this Tag.
+                // NDEF no soportado
                 Toast.makeText(this, "NDEF not supported!", Toast.LENGTH_SHORT);
 
             } else {
@@ -133,15 +154,24 @@ public class MainActivity extends Activity{
                     if (ndefRecord.getTnf() == NdefRecord.TNF_WELL_KNOWN && Arrays.equals(ndefRecord.getType(), NdefRecord.RTD_TEXT)) {
                         try {
 
+                            // Mostramos el texto
                             String text =  readText(ndefRecord);
                             Toast.makeText(this, this.getString(R.string.ok_detection) + text, Toast.LENGTH_LONG ).show();
 
+                            // Mostramos las tecnologias del tag
+                            String specs = "";
                             for (int i = 0; i<mytag.getTechList().length; i++) {
-                                Log.i("TECH:", mytag.getTechList()[i]);
+                                specs += "NFC tag TECH:" + mytag.getTechList()[i] + System.getProperty("line.separator");
                             }
+                            tagSpecsText.setText(specs);
 
-                            Log.i("NFC Tag Id: ", byteArrayToHexString(mytag.getId()));
+                            // Mostramos si es read only
+                            String readOnly = "NFC tag READONLY cap: ";
+                            readOnly += ndef.canMakeReadOnly() ? "true": "false";
+                            readOnlyText.setText(readOnly);
 
+                            // Mostramos el id del tag
+                            tagIdText.setText("NFC tag ID: " + byteArrayToHexString(mytag.getId()));
 
                         } catch (UnsupportedEncodingException e) {
                             Toast.makeText(this, "NDEF not supported!", Toast.LENGTH_SHORT);

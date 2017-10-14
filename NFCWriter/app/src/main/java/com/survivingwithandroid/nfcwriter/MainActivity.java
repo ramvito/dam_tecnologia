@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
 
                     dialog = new ProgressDialog(MainActivity.this);
                     dialog.setMessage("Tag NFC Tag please");
-                    dialog.show();;
+                    dialog.show();
                 }
             }
         });

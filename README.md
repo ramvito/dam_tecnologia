@@ -11,6 +11,8 @@
 - **NFCWriter**: sacado de <https://github.com/survivingwithandroid/Surviving-with-android/tree/master/NFCWriter>. Aplicación más completa y elaborada que permite 
 escribir NFC tags de tipo texto plano o uri (teléfono o url).
 
+- **Videos**: videos con las diferentes demos presentadas.
+
 - **Doc**:
 	- *NFCForum-TS-NDEF.pdf*: documentación completa de NDEF
 	- *NTAG213_215_216.pdf*: datasheet de los NFC tags usados en la demo
